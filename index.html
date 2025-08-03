@@ -1,0 +1,461 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ảnh Của Tôi Và Bạn Bè</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            color: #333;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            padding: 30px;
+            border-radius: 20px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+        
+        .header h1 {
+            color: white;
+            font-size: 2.5em;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+        
+        .header p {
+            color: rgba(255, 255, 255, 0.9);
+            font-size: 1.1em;
+        }
+        
+        .upload-section {
+            background: rgba(255, 255, 255, 0.95);
+            padding: 25px;
+            border-radius: 15px;
+            margin-bottom: 30px;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.1);
+        }
+        
+        .upload-area {
+            border: 3px dashed #667eea;
+            border-radius: 10px;
+            padding: 40px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            background: #f8f9ff;
+        }
+        
+        .upload-area:hover {
+            border-color: #764ba2;
+            background: #f0f2ff;
+            transform: translateY(-2px);
+        }
+        
+        .upload-area.dragover {
+            border-color: #4CAF50;
+            background: #f0fff0;
+        }
+        
+        .upload-text {
+            font-size: 1.2em;
+            color: #667eea;
+            margin-bottom: 10px;
+        }
+        
+        .file-input {
+            display: none;
+        }
+        
+        .btn {
+            background: linear-gradient(45deg, #667eea, #764ba2);
+            color: white;
+            border: none;
+            padding: 12px 25px;
+            border-radius: 25px;
+            cursor: pointer;
+            font-size: 1em;
+            transition: all 0.3s ease;
+            margin: 10px;
+        }
+        
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+        }
+        
+        .photo-info {
+            margin-top: 15px;
+            display: none;
+        }
+        
+        .photo-info input {
+            width: 100%;
+            padding: 10px;
+            margin: 5px 0;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            font-size: 1em;
+        }
+        
+        .photo-info input:focus {
+            border-color: #667eea;
+            outline: none;
+        }
+        
+        .gallery {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+            margin-top: 30px;
+        }
+        
+        .photo-card {
+            background: white;
+            border-radius: 15px;
+            overflow: hidden;
+            box-shadow: 0 8px 25px rgba(0,0,0,0.1);
+            transition: all 0.3s ease;
+            position: relative;
+        }
+        
+        .photo-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 35px rgba(0,0,0,0.2);
+        }
+        
+        .photo-card img {
+            width: 100%;
+            height: 250px;
+            object-fit: cover;
+            cursor: pointer;
+        }
+        
+        .photo-info-display {
+            padding: 20px;
+        }
+        
+        .photo-title {
+            font-size: 1.3em;
+            font-weight: bold;
+            margin-bottom: 8px;
+            color: #333;
+        }
+        
+        .photo-description {
+            color: #666;
+            margin-bottom: 10px;
+            line-height: 1.5;
+        }
+        
+        .photo-date {
+            color: #999;
+            font-size: 0.9em;
+        }
+        
+        .delete-btn {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background: rgba(255, 0, 0, 0.8);
+            color: white;
+            border: none;
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            cursor: pointer;
+            font-size: 1.2em;
+            display: none;
+        }
+        
+        .photo-card:hover .delete-btn {
+            display: block;
+        }
+        
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0,0,0,0.9);
+        }
+        
+        .modal-content {
+            display: block;
+            margin: auto;
+            max-width: 90%;
+            max-height: 90%;
+            margin-top: 2%;
+        }
+        
+        .close {
+            position: absolute;
+            top: 15px;
+            right: 35px;
+            color: #f1f1f1;
+            font-size: 40px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+        
+        .close:hover {
+            color: #bbb;
+        }
+        
+        .stats {
+            text-align: center;
+            margin: 20px 0;
+            color: white;
+            font-size: 1.1em;
+        }
+        
+        @media (max-width: 768px) {
+            .container {
+                padding: 10px;
+            }
+            
+            .header h1 {
+                font-size: 2em;
+            }
+            
+            .gallery {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>📸 Ảnh Của Tôi Và Bạn Bè</h1>
+            <p>Nơi lưu giữ những khoảnh khắc đẹp của chúng ta</p>
+        </div>
+        
+        <div class="upload-section">
+            <div class="upload-area" id="uploadArea">
+                <div class="upload-text">🖼️ Kéo thả ảnh vào đây hoặc click để chọn</div>
+                <button class="btn" onclick="document.getElementById('fileInput').click()">
+                    Chọn Ảnh
+                </button>
+                <input type="file" id="fileInput" class="file-input" accept="image/*" multiple>
+            </div>
+            
+            <div class="photo-info" id="photoInfo">
+                <input type="text" id="photoTitle" placeholder="Tiêu đề ảnh...">
+                <input type="text" id="photoDescription" placeholder="Mô tả về bức ảnh...">
+                <button class="btn" onclick="addPhotos()">Thêm Ảnh</button>
+                <button class="btn" onclick="cancelUpload()" style="background: #ccc;">Hủy</button>
+            </div>
+        </div>
+        
+        <div class="stats" id="stats">
+            <span id="photoCount">0</span> ảnh đã được chia sẻ
+        </div>
+        
+        <div class="gallery" id="gallery">
+            <!-- Ảnh mẫu -->
+            <div class="photo-card">
+                <img src="https://picsum.photos/400/250?random=1" alt="Ảnh mẫu">
+                <button class="delete-btn" onclick="deletePhoto(this)">×</button>
+                <div class="photo-info-display">
+                    <div class="photo-title">Chuyến đi biển</div>
+                    <div class="photo-description">Cùng bạn bè đi biển Vũng Tàu hôm qua, trời đẹp quá!</div>
+                    <div class="photo-date">2 ngày trước</div>
+                </div>
+            </div>
+            
+            <div class="photo-card">
+                <img src="https://picsum.photos/400/250?random=2" alt="Ảnh mẫu">
+                <button class="delete-btn" onclick="deletePhoto(this)">×</button>
+                <div class="photo-info-display">
+                    <div class="photo-title">Sinh nhật bạn thân</div>
+                    <div class="photo-description">Tiệc sinh nhật 18 tuổi của An, vui lắm!</div>
+                    <div class="photo-date">1 tuần trước</div>
+                </div>
+            </div>
+            
+            <div class="photo-card">
+                <img src="https://picsum.photos/400/250?random=3" alt="Ảnh mẫu">
+                <button class="delete-btn" onclick="deletePhoto(this)">×</button>
+                <div class="photo-info-display">
+                    <div class="photo-title">Học bài cùng nhau</div>
+                    <div class="photo-description">Ôn thi cuối kỳ ở thư viện trường</div>
+                    <div class="photo-date">3 ngày trước</div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Modal xem ảnh full -->
+    <div id="imageModal" class="modal">
+        <span class="close" onclick="closeModal()">&times;</span>
+        <img class="modal-content" id="modalImage">
+    </div>
+    
+    <script>
+        let selectedFiles = [];
+        let photoCount = 3; // Bắt đầu với 3 ảnh mẫu
+        
+        // Cập nhật số lượng ảnh
+        function updateStats() {
+            document.getElementById('photoCount').textContent = photoCount;
+        }
+        
+        // Khởi tạo
+        updateStats();
+        
+        // Xử lý upload file
+        const uploadArea = document.getElementById('uploadArea');
+        const fileInput = document.getElementById('fileInput');
+        const photoInfo = document.getElementById('photoInfo');
+        
+        // Click để chọn file
+        uploadArea.addEventListener('click', () => {
+            fileInput.click();
+        });
+        
+        // Drag & Drop
+        uploadArea.addEventListener('dragover', (e) => {
+            e.preventDefault();
+            uploadArea.classList.add('dragover');
+        });
+        
+        uploadArea.addEventListener('dragleave', () => {
+            uploadArea.classList.remove('dragover');
+        });
+        
+        uploadArea.addEventListener('drop', (e) => {
+            e.preventDefault();
+            uploadArea.classList.remove('dragover');
+            const files = Array.from(e.dataTransfer.files);
+            handleFiles(files);
+        });
+        
+        // Chọn file
+        fileInput.addEventListener('change', (e) => {
+            const files = Array.from(e.target.files);
+            handleFiles(files);
+        });
+        
+        function handleFiles(files) {
+            selectedFiles = files.filter(file => file.type.startsWith('image/'));
+            if (selectedFiles.length > 0) {
+                photoInfo.style.display = 'block';
+                uploadArea.style.display = 'none';
+            }
+        }
+        
+        function addPhotos() {
+            const title = document.getElementById('photoTitle').value || 'Ảnh mới';
+            const description = document.getElementById('photoDescription').value || 'Một bức ảnh đẹp';
+            
+            selectedFiles.forEach(file => {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    createPhotoCard(e.target.result, title, description);
+                };
+                reader.readAsDataURL(file);
+            });
+            
+            // Reset form
+            cancelUpload();
+        }
+        
+        function cancelUpload() {
+            selectedFiles = [];
+            photoInfo.style.display = 'none';
+            uploadArea.style.display = 'block';
+            document.getElementById('photoTitle').value = '';
+            document.getElementById('photoDescription').value = '';
+            fileInput.value = '';
+        }
+        
+        function createPhotoCard(imageSrc, title, description) {
+            const gallery = document.getElementById('gallery');
+            const photoCard = document.createElement('div');
+            photoCard.className = 'photo-card';
+            
+            const now = new Date();
+            const timeStr = 'Vừa xong';
+            
+            photoCard.innerHTML = `
+                <img src="${imageSrc}" alt="${title}">
+                <button class="delete-btn" onclick="deletePhoto(this)">×</button>
+                <div class="photo-info-display">
+                    <div class="photo-title">${title}</div>
+                    <div class="photo-description">${description}</div>
+                    <div class="photo-date">${timeStr}</div>
+                </div>
+            `;
+            
+            // Thêm event click để xem ảnh full
+            const img = photoCard.querySelector('img');
+            img.addEventListener('click', () => {
+                showModal(imageSrc);
+            });
+            
+            gallery.insertBefore(photoCard, gallery.firstChild);
+            photoCount++;
+            updateStats();
+        }
+        
+        function deletePhoto(btn) {
+            if (confirm('Bạn có chắc muốn xóa ảnh này?')) {
+                btn.parentElement.remove();
+                photoCount--;
+                updateStats();
+            }
+        }
+        
+        function showModal(imageSrc) {
+            const modal = document.getElementById('imageModal');
+            const modalImg = document.getElementById('modalImage');
+            modal.style.display = 'block';
+            modalImg.src = imageSrc;
+        }
+        
+        function closeModal() {
+            document.getElementById('imageModal').style.display = 'none';
+        }
+        
+        // Đóng modal khi click bên ngoài
+        window.addEventListener('click', (e) => {
+            const modal = document.getElementById('imageModal');
+            if (e.target === modal) {
+                closeModal();
+            }
+        });
+        
+        // Thêm event click cho ảnh mẫu
+        document.addEventListener('DOMContentLoaded', () => {
+            const existingImages = document.querySelectorAll('.photo-card img');
+            existingImages.forEach(img => {
+                img.addEventListener('click', () => {
+                    showModal(img.src);
+                });
+            });
+        });
+    </script>
+</body>
+</html>
